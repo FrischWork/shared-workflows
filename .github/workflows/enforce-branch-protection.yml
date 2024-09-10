@@ -12,7 +12,6 @@ on:
       token:
         description: 'GitHub token'
         required: true
-        type: string
 
 jobs:
   branch-protection:
