@@ -1,0 +1,35 @@
+name: Enforce Branch Protection
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Branch to protect'
+        required: true
+        default: 'main'
+    secrets:
+      token:
+        description: 'GitHub token'
+        required: true
+
+jobs:
+  branch-protection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${{ secrets.token }}" | gh auth login --with-token
+
+      - name: Apply Branch Protection Rules
+        run: |
+          gh api --method PUT repos/${{ github.repository }}/branches/${{ inputs.branch }}/protection \
+            -F required_status_checks.contexts='["status-check"]' \
+            -F enforce_admins=true \
+            -F required_pull_request_reviews.dismiss_stale_reviews=true \
+            -F required_pull_request_reviews.required_approving_review_count=1 \
+            -F required_conversation_resolution=true \
+            -F delete_branch_on_merge=true \
+            -H "Accept: application/vnd.github.v3+json"
