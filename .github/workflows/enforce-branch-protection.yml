@@ -7,10 +7,12 @@ on:
         description: 'Branch to protect'
         required: true
         default: 'main'
+        type: string
     secrets:
       token:
         description: 'GitHub token'
         required: true
+        type: string
 
 jobs:
   branch-protection:
