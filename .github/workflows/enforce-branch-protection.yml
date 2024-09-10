@@ -27,10 +27,13 @@ jobs:
       - name: Apply Branch Protection Rules
         run: |
           gh api --method PUT repos/${{ github.repository }}/branches/${{ inputs.branch }}/protection \
-            -F required_status_checks.contexts='["status-check"]' \
-            -F enforce_admins=true \
-            -F required_pull_request_reviews.dismiss_stale_reviews=true \
-            -F required_pull_request_reviews.required_approving_review_count=1 \
-            -F required_conversation_resolution=true \
-            -F delete_branch_on_merge=true \
+            -F required_status_checks.contexts='[]' \              # Status checks can be specified here
+            -F required_status_checks.strict=true \                # Required for status checks to be enforced
+            -F enforce_admins=true \                               # Prevent admins from overriding
+            -F required_pull_request_reviews.dismiss_stale_reviews=true \  # Dismiss stale reviews
+            -F required_pull_request_reviews.required_approving_review_count=1 \  # Minimum 1 review
+            -F restrictions.teams='[]' \                           # No specific team restrictions
+            -F restrictions.users='[]' \                           # No specific user restrictions
+            -F required_conversation_resolution=true \             # Require PR comments to be resolved
+            -F delete_branch_on_merge=true \                       # Automatically delete branch after merge
             -H "Accept: application/vnd.github.v3+json"
